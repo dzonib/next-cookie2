@@ -1,14 +1,19 @@
 import {useEffect, useState} from 'react'
 import {getUserProfile} from '../lib/auth'
-import Layout from '../components/Layout';
+import Layout from '../components/Layout'
+import axios from 'axios'
+
+axios.defaults.withCredentials = true
 
 export default function Profile() {
 
     const [userProfile, setUserProfile] = useState('')
 
     useEffect(() => {
-        getUserProfile().then((data) => {
+        // cookie will be automaticly 
+        // put on header (because of withCredentials option we added on axios)
 
+        axios.get('/api/profile').then(({data}) => {
             setUserProfile(data)
         })
     }, [])

@@ -22,7 +22,6 @@ function LoginForm() {
 
         try {
             const { data } = await axios.post("/api/login", { email, password })
-            console.log(data)
             Router.push("/profile")
         } catch (e) {
             setIsLoading(false)
