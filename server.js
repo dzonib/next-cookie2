@@ -16,15 +16,21 @@ const COOKIE_SECRET = 'yo'
 app.prepare().then(() => {
     sequelize.sync().then(() => {
         const server = express()
+
         server.use(cors())
         server.use(express.json())
-
         server.use(cookieParser(COOKIE_SECRET))
         // when we add cookie parser middleware we can read 
         // signed cookies as req.signedCookies
 
         server.post('/api/register', async (req, res) => {
             const { name, email, password } = req.body
+
+            const checkUser = await User.find({ email })
+
+            if (checkUser) {
+                res.json(403).send('User already registered!')
+            }
 
             const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -42,7 +48,9 @@ app.prepare().then(() => {
         })
 
         server.post('/api/login', async (req, res) => {
-            const {email, password} = req.body
+
+            const { email, password } = req.body
+
             try {
                 const user = await User.findOne({ email })
 
@@ -53,7 +61,8 @@ app.prepare().then(() => {
                 const match = await bcrypt.compare(password, user.password)
     
                 if (match) {
-    
+                    // first arg token name (wich is stored as in cookies)
+                    // second payload (user data), and third - options
                     res.cookie("tokenyo", user, {
                         // prevent acces from clientside
                         httpOnly: true,

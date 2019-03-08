@@ -22,6 +22,10 @@ function LoginForm() {
 
         try {
             const { data } = await axios.post("/api/login", { email, password })
+
+            // if user data exist set it to window object as __USER__
+            window['__USER__'] = data || {}
+
             Router.push("/profile")
         } catch (e) {
             setIsLoading(false)
